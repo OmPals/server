@@ -72,7 +72,6 @@ class ApplicationTest extends TestCase {
 			[AdminSettingsController::class, Controller::class],
 			[AppSettingsController::class, Controller::class],
 			[AuthSettingsController::class, Controller::class],
-			// Needs session: [CertificateController::class, Controller::class],
 			[CheckSetupController::class, Controller::class],
 			[LogSettingsController::class, Controller::class],
 			[MailSettingsController::class, Controller::class],
@@ -89,32 +88,5 @@ class ApplicationTest extends TestCase {
 	 */
 	public function testContainerQuery($service, $expected) {
 		$this->assertTrue($this->container->query($service) instanceof $expected);
-	}
-
-	public function dataContainerQueryRequiresSession() {
-		return [
-			[CertificateController::class, Controller::class],
-		];
-	}
-
-	/**
-	 * @dataProvider dataContainerQueryRequiresSession
-	 * @param string $service
-	 * @param string $expected
-	 */
-	public function testContainerQueryRequiresSession($service, $expected) {
-		$user = $this->createMock(IUser::class);
-		$user->expects($this->once())
-			->method('getUID')
-			->willReturn('test');
-
-		$session = $this->createMock(IUserSession::class);
-		$session->expects($this->once())
-			->method('getUser')
-			->willReturn($user);
-
-		$this->overwriteService(Session::class, $session);
-		$this->assertTrue($this->container->query($service) instanceof $expected);
-		$this->restoreService(Session::class);
 	}
 }
